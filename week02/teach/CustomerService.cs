@@ -1,34 +1,86 @@
-﻿/// <summary>
+﻿using System.Data.Common;
+
+/// <summary>
 /// Maintain a Customer Service Queue.  Allows new customers to be 
 /// added and allows customers to be serviced.
 /// </summary>
 public class CustomerService {
     public static void Run() {
         // Example code to see what's in the customer service queue:
-        // var cs = new CustomerService(10);
+        //var cs = new CustomerService(10);
         // Console.WriteLine(cs);
 
         // Test Cases
 
         // Test 1
-        // Scenario: 
-        // Expected Result: 
+        // Scenario:  Add a customer to the queue and serving the customer
+        // Expected Result: Name, number, problem
         Console.WriteLine("Test 1");
 
-        // Defect(s) Found: 
+        //Customer customer1 = new Customer("name", "1", "Problem 1");
+        var cs = new CustomerService(4);
+        cs.AddNewCustomer();
+        cs.ServeCustomer();
 
         Console.WriteLine("=================");
 
         // Test 2
-        // Scenario: 
+        // Scenario: Can I add two customers and then serve the customers in the right order?
         // Expected Result: 
         Console.WriteLine("Test 2");
+        var cs1 = new CustomerService(4);
+        cs1.AddNewCustomer();
+        cs1.AddNewCustomer();
+
+        Console.WriteLine("Now serving customers:");
+        cs1.ServeCustomer();
+        cs1.ServeCustomer();
 
         // Defect(s) Found: 
 
         Console.WriteLine("=================");
 
         // Add more Test Cases As Needed Below
+                // Test 3
+        // Scenario: Serve a customer without there being a customer
+        // Expected Result: Should error out
+        Console.WriteLine("Test 3");
+        var cs2 = new CustomerService(4);
+
+        Console.WriteLine("No customers in queue");
+
+
+        // Defect(s) Found: Will give message
+
+        Console.WriteLine("=================");
+                // Test 4
+        // Scenario: Does the max number of customers get enforced?
+        // Expected Result: last customer should be rejected
+        Console.WriteLine("Test 4");
+        var cs4 = new CustomerService(4);
+        cs4.AddNewCustomer();
+        cs4.AddNewCustomer();
+        cs4.AddNewCustomer();
+        cs4.AddNewCustomer();
+        cs4.AddNewCustomer();
+
+        Console.WriteLine($"Service Queue: {cs4}");
+
+
+        // Defect(s) Found: 
+
+        Console.WriteLine("=================");
+                // Test 5
+        // Scenario: Does the max size default if invalid value is provided
+        // Expected Result: 
+        Console.WriteLine("Test 5");
+        var cs5 = new CustomerService(0);
+        Console.WriteLine($"Size should be 10: {cs5}");
+
+
+        // Defect(s) Found: 
+
+        Console.WriteLine("=================");
     }
 
     private readonly List<Customer> _queue = new();
@@ -67,7 +119,7 @@ public class CustomerService {
     /// </summary>
     private void AddNewCustomer() {
         // Verify there is room in the service queue
-        if (_queue.Count > _maxSize) {
+        if (_queue.Count >= _maxSize) {
             Console.WriteLine("Maximum Number of Customers in Queue.");
             return;
         }
@@ -88,9 +140,16 @@ public class CustomerService {
     /// Dequeue the next customer and display the information.
     /// </summary>
     private void ServeCustomer() {
-        _queue.RemoveAt(0);
-        var customer = _queue[0];
-        Console.WriteLine(customer);
+        if (_queue.Count <= 0)
+        {
+            Console.WriteLine("No Customer in the queue");
+        }
+        else
+        {
+            var customer = _queue[0];
+            _queue.RemoveAt(0);
+            Console.WriteLine(customer);
+        }
     }
 
     /// <summary>
