@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 
 public static class SetsAndMaps
@@ -21,8 +22,22 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        HashSet<string> set = new HashSet<string>(words);
+        List<string> result = new List<string>();
+
+        foreach (string letters in words)   //iterate through the words
+        {
+            if (letters[0] == letters[1]) //look at the characters in the word...if they are the same, continue and do nothing
+                continue;
+
+            string rev = $"{letters[1]}{letters[0]}"; //reversing the letters
+
+            if (set.Contains(rev) && string.Compare(letters, rev) < 0)  //add the pair if the word and reversed word exists
+            {
+                result.Add($"{letters} & {rev}");
+            }
+        }
+        return result.ToArray();
     }
 
     /// <summary>
@@ -42,7 +57,17 @@ public static class SetsAndMaps
         foreach (var line in File.ReadLines(filename))
         {
             var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+
+            string degree = fields[3]; //4th column is index 3
+
+            if (degrees.ContainsKey(degree)) //if degree is in the dictionary, add one to the count
+            {
+                degrees[degree]++;
+            }
+            else
+            {
+                degrees[degree] = 1; //if degree is not in the dictionary, add the degree with a count of one
+            }
         }
 
         return degrees;
@@ -66,8 +91,41 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        //make them all lowercase
+        Dictionary<char, int> letters = new Dictionary<char, int>();
+
+        word1 = word1.ToLower().Replace(" ", "");
+        word2 = word2.ToLower().Replace(" ", "");
+
+        // make sure same number of letters in word
+        if (word1.Length != word2.Length)
+            return false;
+
+        //count letter in word1
+        foreach (char letter in word1)
+        {
+            if (letters.ContainsKey(letter))
+                letters[letter]++;
+            else
+                letters[letter] = 1;
+        }
+
+        //  subtract the letters of word 2
+        foreach (char letter in word2)
+        {
+            if (!letters.ContainsKey(letter))
+                return false;
+
+            letters[letter]--;
+        }
+
+        //verify correct number of letter and correct letters
+        foreach (var x in letters)
+        {
+            if (x.Value != 0)
+                return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -82,7 +140,13 @@ public static class SetsAndMaps
     /// at this website:  
     /// 
     /// https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
-    /// 
+        // type: "Feature",
+        // properties: {
+        // mag: Decimal,
+        // place: String,
+        //time: Long Integer,
+        //updated: Long Integer,
+        //tz: Integer,
     /// </summary>
     public static string[] EarthquakeDailySummary()
     {
@@ -96,11 +160,15 @@ public static class SetsAndMaps
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
 
-        // TODO Problem 5:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
-        // 3. Return an array of these string descriptions.
-        return [];
+        var result = new List<string>();
+
+        foreach (var quake in featureCollection.Features)
+        {
+            string place = quake.Properties.place;
+            double mag = quake.Properties.mag;
+
+            result.Add($"{place} - {mag}");
+        }
+        return  result.ToArray();
     }
 }
