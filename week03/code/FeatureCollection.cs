@@ -12,6 +12,6 @@ public class Feature
 
 public class Properties
 {
-    public string place { get; set; }
-    public double mag { get; set; }
+    public string Place { get; set; }
+    public double? Mag { get; set; }
 }

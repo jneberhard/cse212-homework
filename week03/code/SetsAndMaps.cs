@@ -164,10 +164,11 @@ public static class SetsAndMaps
 
         foreach (var quake in featureCollection.Features)
         {
-            string place = quake.Properties.place;
-            double mag = quake.Properties.mag;
+            string place = quake.Properties.Place;
+            double? mag = quake.Properties.Mag;
 
-            result.Add($"{place} - {mag}");
+            if (mag.HasValue)
+                result.Add($"{place} - Mag {mag.Value:F1}");
         }
         return  result.ToArray();
     }
